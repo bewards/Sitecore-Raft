@@ -1,0 +1,15 @@
+# Normalize line endings: check out/commit text files with LF (consistent across OS).
+* text=auto eol=lf
+
+# Never munge binary assets (line-ending conversion would corrupt them).
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.svg text
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

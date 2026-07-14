@@ -1,0 +1,22 @@
+{
+  "$schema": "../../../.sitecore/schemas/ModuleFile.schema.json",
+  "namespace": "Project.ContentBackup.Site.Nursing",
+  "tags": ["site", "step3", "MinistryHomePage"],
+  "items": {
+    "path": "Project.ContentBackup.Site.Nursing",
+    "includes": [
+      {
+        "name": "Project.ContentBackup.Site.Nursing",
+        "path": "/sitecore/content/Site Collection/Home/nursing",
+        "scope": "ItemAndDescendants",
+        "allowedPushOperations": "CreateAndUpdate"
+      },
+      {
+        "name": "Project.ContentBackup.SiteMedia.Nursing",
+        "path": "/sitecore/media library/Project/Site Collection/nursing",
+        "scope": "ItemAndDescendants",
+        "allowedPushOperations": "CreateAndUpdate"
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "../../../.sitecore/schemas/ModuleFile.schema.json",
+  "namespace": "Project.ContentBackup.Site.Wisconsin",
+  "tags": ["site", "step3", "MinistryHomePage"],
+  "items": {
+    "path": "Project.ContentBackup.Site.Wisconsin",
+    "includes": [
+      {
+        "name": "Project.ContentBackup.Site.Wisconsin",
+        "path": "/sitecore/content/Site Collection/Home/wisconsin",
+        "scope": "ItemAndDescendants",
+        "allowedPushOperations": "CreateAndUpdate"
+      },
+      {
+        "name": "Project.ContentBackup.SiteMedia.Wisconsin",
+        "path": "/sitecore/media library/Project/Site Collection/wisconsin",
+        "scope": "ItemAndDescendants",
+        "allowedPushOperations": "CreateAndUpdate"
+      }
+    ]
+  }
+}

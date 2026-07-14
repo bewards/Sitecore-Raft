@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../.sitecore/schemas/ModuleFile.schema.json",
+  "namespace": "Project.ContentBackup.OtherPages",
+  "tags": ["site", "step4"],
+  "items": {
+    "path": "Project.ContentBackup.OtherPages",
+    "includes": [
+      {
+        "name": "Project.ContentBackup.OtherPages.Account",
+        "path": "/sitecore/content/Site Collection/Home/Account",
+        "scope": "ItemAndDescendants",
+        "allowedPushOperations": "CreateAndUpdate"
+      },
+      {
+        "name": "Project.ContentBackup.OtherPages.CollaborationSites",
+        "path": "/sitecore/content/Site Collection/Home/Collaboration Sites",
+        "scope": "ItemAndDescendants",
+        "allowedPushOperations": "CreateAndUpdate"
+      },
+      {
+        "name": "Project.ContentBackup.OtherPages.BrowseAllApplications",
+        "path": "/sitecore/content/Site Collection/Home/Browse All Applications",
+        "scope": "ItemAndDescendants",
+        "allowedPushOperations": "CreateAndUpdate"
+      },
+      {
+        "name": "Project.ContentBackup.OtherPages.Error",
+        "path": "/sitecore/content/Site Collection/Home/Error",
+        "scope": "ItemAndDescendants",
+        "allowedPushOperations": "CreateAndUpdate"
+      },
+      {
+        "name": "Project.ContentBackup.OtherPages.Search",
+        "path": "/sitecore/content/Site Collection/Home/Search",
+        "scope": "ItemAndDescendants",
+        "allowedPushOperations": "CreateAndUpdate"
+      }
+    ]
+  }
+}

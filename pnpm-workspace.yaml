@@ -1,0 +1,5 @@
+# Approve dependency build scripts (pnpm blocks postinstall/build scripts by default).
+# sharp = Next.js image optimization; unrs-resolver = eslint-config-next resolver.
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
