@@ -10,39 +10,37 @@ export const STEPS: StepMeta[] = [
     title: "Configure environments",
     short: "Configure",
     description:
-      "Set the source (PROD) and destination (UAT) hosts and target database, then verify authentication.",
+      "Point at your source and destination environments, set the target database, and check your credentials work.",
   },
   {
     title: "Select content",
     short: "Content",
     description:
-      "Choose the item trees to transfer — import from serialization module.json files and/or add paths manually.",
+      "Pick what to move — pull item trees from serialization modules, add by tag, or type paths in yourself.",
   },
   {
     title: "Create transfer",
     short: "Create",
-    description: "Review the request body and create the content transfer operation on the source.",
+    description: "Give the request a look, then kick off the transfer on the source.",
   },
   {
     title: "Monitor",
     short: "Monitor",
-    description: "Poll the operation until it completes and inspect the generated chunk sets.",
+    description: "Wait for the source to finish packaging everything into chunk sets.",
   },
   {
     title: "Stream chunks",
     short: "Stream",
-    description:
-      "Copy each chunk from source to destination, then complete each chunk set to produce .raif files.",
+    description: "Copy every chunk over to the destination and turn each chunk set into a .raif.",
   },
   {
     title: "Consume .raif",
     short: "Consume",
-    description:
-      "Consume each .raif file (file-system source) into the destination database via the Item Transfer API.",
+    description: "Pull each .raif into the destination database.",
   },
   {
     title: "Summary & cleanup",
     short: "Summary",
-    description: "Review results, browse history, and optionally delete the source transfer operation.",
+    description: "See how it went, browse the history, and clean up the source transfer when you're done.",
   },
 ];

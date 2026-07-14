@@ -120,11 +120,10 @@ by `blobName`. After Step 4 you will see the file in `GET /sources/blobs` (state
 while `GET /sources/files` stays empty. Consuming it drives the blob state
 `Uploaded → Initializing → Consumed`.
 
-> The original phase-1 plan assumed a *file-system* source. That assumption was wrong for
-> XM Cloud — verified empirically: after a transfer completes, the `.raif` is a blob, and a
-> `fileName=` consume can never find it. The file-system code path is retained
-> (`consumeSource({ fileName })`, `/sources/files`) for genuine on-disk `.raif` files, but the
-> wizard uses blobs.
+> It's easy to reach for a file-system source here, but on XM Cloud that won't work: a completed
+> transfer lands in blob storage, so a `fileName=` consume never finds it. The code keeps a
+> file-system path (`consumeSource({ fileName })`, `/sources/files`) for `.raif` files that are
+> genuinely on the CM disk, but the wizard consumes by `blobName`.
 
 ---
 
@@ -178,10 +177,10 @@ Caveats:
   body-less POSTs. Without an explicit `Content-Length`, the Sitecore edge (Cloudflare/IIS)
   rejects them with `HTTP 411 Length Required`. `sitecoreFetch` sends an empty body so
   `Content-Length: 0` is emitted automatically.
-- **Scope: `ItemAndChildren` is not supported.** The Content Transfer `TreeScope` enum accepts
-  only `SingleItem` and `ItemAndDescendants` (verified against the live API). When importing
-  serialization modules, `ItemAndChildren` is remapped to `ItemAndDescendants` (which is
-  *broader* — all descendants, not just direct children) and flagged in the UI.
+- **Scope: `ItemAndChildren` is not supported.** The Content Transfer `TreeScope` enum only
+  accepts `SingleItem` and `ItemAndDescendants` — send anything else and you get a 400. When
+  importing serialization modules, `ItemAndChildren` gets remapped to `ItemAndDescendants` (which
+  is *broader* — all descendants, not just direct children) and flagged in the UI.
 - **Transfer list lag.** After consuming, `GET /transfers` can take ~10–15 s to register and may
   briefly report `TransferState: Unknown` even once the blob shows `Consumed`. The **BlobState**
   badge in Step 5 is the more reliable progress signal.
@@ -191,7 +190,8 @@ Caveats:
 
 ## API Findings
 
-Behaviours confirmed by observing live PROD→UAT runs — not obvious from the docs:
+A few things that only really show up once you run this against real environments — and aren't in
+the docs:
 
 ### Consume/ingest throughput ≈ 4 items/sec
 
@@ -226,10 +226,10 @@ event in `/history` *usually* accompanies completion — but not always (see bel
 
 ### `/history` can omit the `Finished` event on large transfers
 
-Observed: a large transfer (74,060 items) completed cleanly — `GET /sources/blobs/{name}` →
-`Transferred`, `GET /transfers/{id}` → `Finished` with `74060/74060` — yet its `/history` entry
-still listed only `[{ InProgress }]`, never logging a `Finished` event. Smaller transfers in the
-same environment did record `InProgress → Finished`.
+One large transfer (74,060 items) finished cleanly — `GET /sources/blobs/{name}` → `Transferred`,
+`GET /transfers/{id}` → `Finished` with `74060/74060` — yet its `/history` entry still listed only
+`[{ InProgress }]`, never logging a `Finished` event. Smaller transfers in the same environment did
+record `InProgress → Finished`.
 
 Consequences:
 - **`/history` is not a reliable completion or timing signal.** Because there's no `Finished`
@@ -247,8 +247,8 @@ This process replaces the `dotnet sitecore ser pull` / `ser push` workflow (Site
 Serialization, "SCS"). They solve overlapping but different problems: SCS is **content-as-code**
 (serialize to disk, commit, deploy), while the Content Transfer + Item Transfer APIs are
 **purpose-built environment-to-environment migration** (stream a package straight from source to
-destination). The tables below reflect what we verified building this POC; SCS capabilities are
-from its serialization model (several are visible in this repo's `sitecore.json`).
+destination). The tables below are what I ran into building this POC; the SCS side comes from its
+serialization model (a few of these are right there in this repo's `sitecore.json`).
 
 | Capability | Legacy SCS (`ser pull`/`push`) | Content Transfer + Item Transfer |
 |---|---|---|
@@ -257,12 +257,12 @@ from its serialization model (several are visible in this repo's `sitecore.json`
 | Version-control friendly | **Yes** — git, diffs, PR review, CI/CD | No — binary, not diffable |
 | Transport | Local files + CLI push from a workstation | Chunked streaming (content encrypted, media compressed), server-side |
 | Local disk footprint | Full copy on the workstation (media as base64 → large) | None for large runs — package built server-side into blob |
-| Scope options | `SingleItem`, `ItemAndChildren`, `ItemAndDescendants`, `DescendantsOnly`, `Ignored` | `SingleItem`, `ItemAndDescendants` **only** (verified) |
-| Sub-path rules (`includes[].rules`) | **Yes** — per-path include/exclude, per-rule scope/ops | No — a data tree is just `{ ItemPath, Scope, MergeStrategy }` (verified) |
-| Field-level exclusion (`excludedFields`) | **Yes** | No — full items are transferred (verified: no field params in the create body) |
+| Scope options | `SingleItem`, `ItemAndChildren`, `ItemAndDescendants`, `DescendantsOnly`, `Ignored` | `SingleItem`, `ItemAndDescendants` **only** |
+| Sub-path rules (`includes[].rules`) | **Yes** — per-path include/exclude, per-rule scope/ops | No — a data tree is just `{ ItemPath, Scope, MergeStrategy }` |
+| Field-level exclusion (`excludedFields`) | **Yes** | No — full items move; the create body has no field params |
 | Conflict handling | `allowedPushOperations`: `CreateOnly` / `UpdateOnly` / `CreateAndUpdate` / `CreateUpdateAndDelete` | `MergeStrategy`: `OverrideExistingItem` / `KeepExistingItem` / `LatestWin` / `OverrideExistingTree` |
-| Delete / orphan removal | **Yes** (`removeOrphans*`, `CreateUpdateAndDelete`) | Not clearly exposed — `OverrideExistingTree` may replace a tree, but there's no explicit orphan control *(unverified)* |
-| Roles & users / security | **Yes** — serializes roles and users | Appears content/media only *(unverified)* |
+| Delete / orphan removal | **Yes** (`removeOrphans*`, `CreateUpdateAndDelete`) | Not clearly exposed — `OverrideExistingTree` may replace a tree, but no explicit orphan control *(didn't confirm)* |
+| Roles & users / security | **Yes** — serializes roles and users | Looks like content/media only *(didn't confirm)* |
 | Media handling | Base64 inline in YAML (bloats files, slow git) | Compressed binary chunks in blob — purpose-built for volume |
 | Progress / monitoring | CLI console output | API: transfer state, chunk sets, `TransferredItemsCount/TotalItemsCount`, history, retry |
 | Dry-run / comparison | Version comparison available | None — merge is applied at consume time |
@@ -272,8 +272,8 @@ from its serialization model (several are visible in this repo's `sitecore.json`
 ### What the Content Transfer process lacks vs. SCS
 
 - **Coarser scope.** Only `SingleItem` and `ItemAndDescendants`. No `ItemAndChildren` (direct
-  children only — **verified rejected** with HTTP 400), no `DescendantsOnly`, no `Ignored`. To
-  approximate direct-children-only you must enumerate child paths as separate data trees.
+  children only — the API rejects it with a 400), no `DescendantsOnly`, no `Ignored`. To get
+  direct-children-only you'd have to list the child paths as separate data trees.
 - **No rules engine.** SCS `includes[].rules` let you include a subtree but carve out or re-scope
   specific sub-paths. The transfer API has no equivalent — each data tree is all-or-nothing under
   its single scope.
@@ -281,8 +281,8 @@ from its serialization model (several are visible in this repo's `sitecore.json`
 - **No deterministic, reviewable artifact.** The `.raif` is opaque and blob-hosted — you can't
   diff it, commit it, or review a change set before applying. SCS YAML is the opposite.
 - **No dry-run / diff.** You can't preview what a merge will change; strategy is applied at consume.
-- **Weaker delete/orphan and security story** *(unverified)* — no obvious equivalent to
-  `CreateUpdateAndDelete` / orphan removal, and roles/users don't appear to be part of the model.
+- **Weaker delete/orphan and security story** *(didn't confirm)* — no obvious equivalent to
+  `CreateUpdateAndDelete` / orphan removal, and roles/users don't look like part of the model.
 
 ### Benefits over SCS for environment-to-environment migration
 
@@ -308,8 +308,8 @@ from its serialization model (several are visible in this repo's `sitecore.json`
   SitecoreAI environments where the payload is large, no git artifact is wanted, and the whole
   thing should run headless/automated.
 
-> Caveats marked *(unverified)* are inferences about the transfer APIs we did **not** confirm
-> against a live environment in this POC — validate them before relying on them.
+> The bits marked *(didn't confirm)* are my best guess — I didn't test them against a live
+> environment, so check them yourself before relying on them.
 
 ---
 
@@ -319,8 +319,8 @@ from its serialization model (several are visible in this repo's `sitecore.json`
   raw chunk PROD → **this Next server** → UAT. For **content** chunks (encrypted item data) that's
   kilobytes and takes ~300 ms. For **media** chunks (`IsMedia = true`, compressed binary assets —
   images, PDFs, files) a single chunk can be tens/hundreds of MB, so per-chunk time jumps to
-  30–50 s+ once the transfer reaches media-library content. Observed live: content chunks ~300 ms,
-  media chunks 45–53 s each.
+  30–50 s+ once the transfer reaches media-library content. In practice I saw content chunks around
+  ~300 ms and media chunks 45–53 s each.
 
   This is a bandwidth/volume bottleneck from the **double hop** through the local relay, not a bug.
   Options to improve:

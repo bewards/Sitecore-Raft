@@ -52,7 +52,7 @@ export function Step3Monitor() {
   return (
     <Card
       title="Monitor transfer"
-      description="Polls the operation status on the source until it reaches Completed. Each chunk set becomes one .raif file after streaming."
+      description="Checks the source until it's done building. Each chunk set becomes one .raif once you stream."
       actions={
         <Button variant="secondary" onClick={() => mutate()}>
           Refresh
@@ -101,8 +101,8 @@ export function Step3Monitor() {
           {data?.State === "Completed" && (
             <div className="mt-4">
               <Alert tone="success">
-                Operation completed with {data.ChunkSetsMetadata?.length ?? 0} chunk set(s).
-                Continue to <strong>Stream chunks</strong>.
+                Done — {data.ChunkSetsMetadata?.length ?? 0} chunk set(s) ready. On to{" "}
+                <strong>Stream chunks</strong>.
               </Alert>
             </div>
           )}

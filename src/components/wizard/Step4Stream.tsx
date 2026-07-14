@@ -107,7 +107,7 @@ export function Step4Stream() {
   return (
     <Card
       title="Stream chunks & complete sets"
-      description="For each chunk set, every chunk is copied source → destination (server-side, bytes unaltered), then the set is completed to produce a .raif file on the destination."
+      description="Copies every chunk from source to destination, then wraps each chunk set into a .raif on the destination."
       actions={
         <Button onClick={runAll} loading={running} disabled={chunkSets.length === 0}>
           {allDone ? "Re-run" : running ? "Streaming…" : "Start streaming"}
@@ -123,7 +123,7 @@ export function Step4Stream() {
           <div className="mb-5">
             <Field
               label="Friendly label (optional)"
-              hint="A human-readable name for this transfer, shown alongside the system .raif name in the Consume and Summary steps. Applies to every .raif in this run unless overridden per chunk set below."
+              hint="A friendly name for this run, shown next to the system .raif name later. Applies to every .raif here unless you override one below."
             >
               <TextInput
                 value={runLabel}
@@ -204,8 +204,8 @@ export function Step4Stream() {
           {allDone && (
             <div className="mt-4">
               <Alert tone="success">
-                All chunk sets completed. {chunkSets.length} .raif file(s) are ready on the
-                destination — continue to <strong>Consume</strong>.
+                All done — {chunkSets.length} .raif file(s) are on the destination. On to{" "}
+                <strong>Consume</strong>.
               </Alert>
             </div>
           )}

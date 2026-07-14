@@ -47,7 +47,7 @@ export function Step0Configure() {
   return (
     <Card
       title="Configure environments"
-      description="The source (PROD) is where content is read from; the destination (UAT) is where chunks are written and .raif files are produced and consumed. The same org-level automation client authenticates against both."
+      description="Source is where content comes from; destination is where it lands. One automation client covers both."
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Source host (PROD)" hint="e.g. cm.prod-tenant.sitecorecloud.io — no scheme">
@@ -64,7 +64,7 @@ export function Step0Configure() {
             placeholder="cm.uat-tenant.sitecorecloud.io"
           />
         </Field>
-        <Field label="Target database" hint="Destination database that will consume the .raif files">
+        <Field label="Target database" hint="Which destination database to import into — usually master">
           <TextInput
             value={config.database}
             onChange={(e) => updateConfig({ database: e.target.value })}
@@ -90,7 +90,7 @@ export function Step0Configure() {
       {auth?.ok && (
         <div className="mt-4">
           <Alert tone="success">
-            Client credentials are valid. This token is cached server-side and works for both hosts.
+            Credentials check out — you&apos;re good for both hosts.
           </Alert>
         </div>
       )}

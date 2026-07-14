@@ -204,7 +204,7 @@ export function Step5Consume() {
     <div className="flex flex-col gap-6">
       <Card
         title="Consume .raif files"
-        description="Each .raif produced by the transfer lands in the destination's blob storage; consuming it imports the items into the target database (Item Transfer API)."
+        description="Each .raif sits in the destination's blob storage. Consuming it imports the items into the target database."
         actions={
           <Button onClick={consumeAll} loading={busy} disabled={raifFiles.length === 0}>
             Consume {raifFiles.length} file(s)
@@ -270,7 +270,7 @@ export function Step5Consume() {
 
       <Card
         title="Destination transfers"
-        description="Consumed/transferred sources on the destination (auto-refreshing). Registration can lag a few seconds after consuming."
+        description="What the destination has consumed so far (auto-refreshing). New rows can take a few seconds to appear."
         actions={
           <Button variant="secondary" onClick={() => mutateTransfers()}>
             Refresh

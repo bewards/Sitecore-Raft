@@ -59,7 +59,7 @@ export function Step6Summary() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card title="Summary" description="Results of this content transfer run.">
+      <Card title="Summary" description="How this run turned out.">
         <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <Stat label="Data trees" value={dataTrees.length} />
           <Stat label="Chunk sets" value={chunkSets.length} />
@@ -102,7 +102,7 @@ export function Step6Summary() {
 
       <Card
         title="Cleanup"
-        description="Delete the content transfer operation and its resources on the source. Do this once all .raif files have been consumed."
+        description="Delete the transfer and its resources on the source — do this once  all .raif files have been consumed."
       >
         {deleted ? (
           <Alert tone="success">Transfer operation deleted from the source.</Alert>
@@ -123,7 +123,7 @@ export function Step6Summary() {
         )}
       </Card>
 
-      <Card title="Destination blob sources" description="Item Transfer API — .raif sources in blob storage and their state.">
+      <Card title="Destination blob sources" description=".raif files in the destination's blob storage and where each one's at.">
         {blobsLoading && !blobSources && <SkeletonRows rows={2} />}
         {blobSources?.Sources?.length ? (
           <ul className="flex flex-col gap-1.5 text-sm">
@@ -149,7 +149,7 @@ export function Step6Summary() {
         )}
       </Card>
 
-      <Card title="Transfer history" description="Item Transfer API — consumed sources timeline.">
+      <Card title="Transfer history" description="What's been consumed, most recent first.">
         {historyLoading && !history && <SkeletonRows rows={2} />}
         {history?.Sources?.length ? (
           <ul className="flex flex-col gap-2 text-sm">

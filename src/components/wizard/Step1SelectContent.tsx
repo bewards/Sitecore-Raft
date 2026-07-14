@@ -111,7 +111,7 @@ export function Step1SelectContent() {
     <div className="flex flex-col gap-6">
       <Card
         title="Transfer ID"
-        description="A unique ID for this content transfer operation. Reusing a previous ID overwrites that operation on the source."
+        description="A unique ID for this transfer. Reuse an old one and you'll overwrite that transfer on the source."
       >
         <div className="flex items-end gap-3">
           <div className="flex-1">
@@ -133,7 +133,7 @@ export function Step1SelectContent() {
 
       <Card
         title="Import from serialization modules"
-        description="Add item trees from any existing serialization module under `/serialization-modules`, or upload your own module.json files. The module will be parsed and the item trees will be added to the transfer list below."
+        description="Grab item trees from an existing serialization module, or upload your own module.json. We'll parse it and add the trees to the list below."
       >
         {isLoading && <SkeletonRows rows={4} />}
         {error && <Alert tone="warning">Could not load sample modules: {String(error)}</Alert>}
@@ -214,7 +214,7 @@ export function Step1SelectContent() {
 
       <Card
         title="Data trees to transfer"
-        description="Each row becomes an entry in the create-transfer request. Scope and merge strategy are editable."
+        description="Each row is one tree in the transfer. Adjust scope and merge strategy as needed."
         actions={
           <div className="flex items-center gap-2">
             {dataTrees.length > 0 && (
@@ -231,8 +231,8 @@ export function Step1SelectContent() {
         {warnings.length > 0 && (
           <div className="mb-4">
             <Alert tone="warning">
-              {warnings.length} row(s) had an unsupported scope that was remapped. Hover the warning
-              badge for details.
+              {warnings.length} row(s) used a scope the API doesn&apos;t support, so we remapped
+              them. Hover the badge for details.
             </Alert>
           </div>
         )}

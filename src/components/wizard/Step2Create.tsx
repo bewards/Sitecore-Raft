@@ -45,7 +45,7 @@ export function Step2Create() {
   return (
     <Card
       title="Create transfer operation"
-      description="This POSTs to the Content Transfer API on the source host. The request body is shown below exactly as it will be sent."
+      description="Here's the exact request we'll send to the source. Give it a look, then create the transfer."
     >
       <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
         <span className="text-zinc-500">Reading from (source):</span>
@@ -64,8 +64,7 @@ export function Step2Create() {
       {created && (
         <div className="mt-4">
           <Alert tone="success">
-            Transfer created. Continue to <strong>Monitor</strong> to watch it complete and inspect
-            the chunk sets.
+            Transfer created. Head to <strong>Monitor</strong> to watch it build the chunk sets.
           </Alert>
         </div>
       )}
