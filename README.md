@@ -2,6 +2,8 @@
 
 > **Raft your content between Sitecore environments.**
 
+![Transferring pages across environments with Sitecore Raft](public/steps-for-transferring-pages-across-environments.gif)
+
 A Next.js app that migrates content between two SitecoreAI (XM Cloud) environments —
 **source (PROD) → destination (UAT)** — using the newer **Content Transfer API** and
 **Item Transfer API**, as a modern replacement for the `dotnet sitecore ser pull/push`
